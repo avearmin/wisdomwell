@@ -3,7 +3,11 @@ package server
 import (
 	"errors"
 	"log"
+	"net/http"
 	"os"
+	"time"
+
+	"github.com/avearmin/wisdomwell/internal/api"
 	"github.com/joho/godotenv"
 )
 
@@ -32,5 +36,21 @@ func Start() {
 	config, err := newConfig()
 	if err != nil {
 		log.Fatalf("error loading .env: %v", err)
+	}
+
+	mux := http.NewServeMux()
+
+	corsMux := api.MiddlewareCors(mux)
+
+	srv := http.Server{
+		Addr:         ":" + config.Port,
+		Handler:      corsMux,
+		ReadTimeout:  10 * time.Second,
+		WriteTimeout: 10 * time.Second,
+	}
+
+	log.Println("Serving on port: " + config.Port)
+	if err := srv.ListenAndServe(); err != nil {
+		log.Fatal(err)
 	}
 }
