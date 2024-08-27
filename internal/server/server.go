@@ -40,7 +40,9 @@ func Start() {
 
 	mux := http.NewServeMux()
 
-	corsMux := api.MiddlewareCors(mux)
+	mux.HandleFunc("GET /api/healthz", api.HandlerHealthz)
+
+	corsMux := middlewareCors(mux)
 
 	srv := http.Server{
 		Addr:         ":" + config.Port,

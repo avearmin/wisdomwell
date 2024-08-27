@@ -5,7 +5,7 @@ import (
 	"net/http"
 )
 
-func handlerHealthz(w http.ResponseWriter, r *http.Request) {
+func HandlerHealthz(w http.ResponseWriter, r *http.Request) {
 	payload := struct {
 		Status string `json:"status"`
 	}{
