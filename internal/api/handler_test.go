@@ -1,30 +1,37 @@
 package api
 
 import (
-	"errors"
 	"net/http/httptest"
 	"strings"
 	"testing"
 )
 
 func TestReadParameters(t *testing.T) {
+	type user struct {
+		Name  string `json:"name"`
+		Email string `json:"email"`
+	}
+
 	tests := []struct {
 		name         string
 		body         string
 		expectParams any
-		expectError  error
+		hasError     bool
 	}{
 		{
 			name: "valid request",
 			body: `{"name":"armin","email":"arminonsky@foo.bar"}`,
-			expectParams: struct {
-				Name  string `json:"name"`
-				Email string `json:"email"`
-			}{
+			expectParams: user{
 				Name:  "armin",
 				Email: "arminonsky@foo.bar",
 			},
-			expectError: nil,
+			hasError: false,
+		},
+		{
+			name:         "invalid request",
+			body:         `{"name":}`,
+			expectParams: user{},
+			hasError:     true,
 		},
 	}
 
@@ -32,18 +39,19 @@ func TestReadParameters(t *testing.T) {
 		t.Run(test.name, func(t *testing.T) {
 			request := httptest.NewRequest("GET", "/foo", strings.NewReader(test.body))
 
-			params := struct {
-				Name  string `json:"name"`
-				Email string `json:"email"`
-			}{}
+			params := user{}
 
 			err := readParameters(request, &params)
-			if !errors.Is(err, test.expectError) {
-				t.Fatalf("expected error=%v, but got error=%v", test.expectError, err)
+			if isError(err) == test.hasError {
+				t.Fatalf("expected error=%t, but got error=%t", test.hasError, isError(err))
 			}
 			if params != test.expectParams {
 				t.Fatalf("expected body=%v,\nbut got body=%v", test.expectParams, params)
 			}
 		})
 	}
+}
+
+func isError(err error) bool {
+	return err == nil
 }
