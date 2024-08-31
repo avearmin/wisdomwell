@@ -34,3 +34,12 @@ func respondWithError(w http.ResponseWriter, code int, msg string) {
 		log.Printf("Error marshaling JSON " + err.Error())
 	}
 }
+
+func readParameters(r *http.Request, parameters any) error {
+	decoder := json.NewDecoder(r.Body)
+	defer r.Body.Close()
+	if err := decoder.Decode(parameters); err != nil {
+		return err
+	}
+	return nil
+}

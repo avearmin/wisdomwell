@@ -1,26 +1,12 @@
 package api
 
 import (
-	"encoding/json"
-	"log"
 	"net/http"
 	"time"
 
 	"github.com/avearmin/wisdomwell/internal/database"
 	"github.com/google/uuid"
 )
-
-func HandlerHealthz(w http.ResponseWriter, r *http.Request) {
-	payload := struct {
-		Status string `json:"status"`
-	}{
-		Status: "OK",
-	}
-
-	if err := respondWithJson(w, http.StatusOK, payload); err != nil {
-		log.Printf("error on /healthz: %v", err)
-	}
-}
 
 func (c Config) HandlerCreateUser(w http.ResponseWriter, r *http.Request) {
 	incoming := struct {
@@ -47,13 +33,4 @@ func (c Config) HandlerCreateUser(w http.ResponseWriter, r *http.Request) {
 	if err := respondWithJson(w, http.StatusOK, outgoing); err != nil {
 		respondWithError(w, http.StatusInternalServerError, "internal server error")
 	}
-}
-
-func readParameters(r *http.Request, parameters any) error {
-	decoder := json.NewDecoder(r.Body)
-	defer r.Body.Close()
-	if err := decoder.Decode(parameters); err != nil {
-		return err
-	}
-	return nil
 }
