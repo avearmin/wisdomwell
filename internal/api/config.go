@@ -35,7 +35,3 @@ func NewConfig() (Config, error) {
 
 	return c, nil
 }
-
-func (c Config) DB() *database.Queries {
-	return c.db
-}
