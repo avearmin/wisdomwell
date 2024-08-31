@@ -19,7 +19,7 @@ func respondWithJson(w http.ResponseWriter, status int, payload any) error {
 	return nil
 }
 
-func respondWithError(w http.ResponseWriter, code int, msg string) error {
+func respondWithError(w http.ResponseWriter, code int, msg string) {
 	if code/100 == 5 {
 		log.Printf("Responding with status code %d: %s", code, msg)
 	}
@@ -31,8 +31,6 @@ func respondWithError(w http.ResponseWriter, code int, msg string) error {
 	})
 
 	if err != nil {
-		return err
+		log.Printf("Error marshaling JSON " + err.Error())
 	}
-
-	return nil
 }

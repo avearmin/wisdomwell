@@ -2,11 +2,12 @@ package api
 
 import (
 	"encoding/json"
-	"github.com/avearmin/wisdomwell/internal/database"
-	"github.com/google/uuid"
 	"log"
 	"net/http"
 	"time"
+
+	"github.com/avearmin/wisdomwell/internal/database"
+	"github.com/google/uuid"
 )
 
 func HandlerHealthz(w http.ResponseWriter, r *http.Request) {
@@ -28,9 +29,7 @@ func (c Config) HandlerCreateUser(w http.ResponseWriter, r *http.Request) {
 	}{}
 
 	if err := readParameters(r, &incoming); err != nil {
-		if err := respondWithError(w, http.StatusInternalServerError, "internal server error"); err != nil {
-			log.Println(err)
-		}
+		respondWithError(w, http.StatusInternalServerError, "internal server error")
 	}
 
 	user, err := c.db.CreateUser(r.Context(), database.CreateUserParams{
@@ -41,20 +40,16 @@ func (c Config) HandlerCreateUser(w http.ResponseWriter, r *http.Request) {
 		Name:      incoming.Name,
 	})
 	if err != nil {
-		if err := respondWithError(w, http.StatusInternalServerError, "internal server error"); err != nil {
-			log.Println(err)
-		}
+		respondWithError(w, http.StatusInternalServerError, "internal server error")
 	}
 
 	outgoing := dbUserToJSONUser(user)
 	if err := respondWithJson(w, http.StatusOK, outgoing); err != nil {
-		if err := respondWithError(w, http.StatusInternalServerError, "internal server error"); err != nil {
-			log.Println(err)
-		}
+		respondWithError(w, http.StatusInternalServerError, "internal server error")
 	}
 }
 
-func readParameters(r *http.Request, parameters interface{}) error {
+func readParameters(r *http.Request, parameters any) error {
 	decoder := json.NewDecoder(r.Body)
 	defer r.Body.Close()
 	if err := decoder.Decode(parameters); err != nil {
