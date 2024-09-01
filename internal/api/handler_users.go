@@ -34,3 +34,23 @@ func (c Config) HandlerCreateUser(w http.ResponseWriter, r *http.Request) {
 		respondWithError(w, http.StatusInternalServerError, "internal server error")
 	}
 }
+
+func (c Config) HandlerGetUser(w http.ResponseWriter, r *http.Request) {
+	incoming := struct {
+		ID uuid.UUID `json:"id"`
+	}{}
+
+	if err := readParameters(r, &incoming); err != nil {
+		respondWithError(w, http.StatusBadRequest, "malformed request body")
+	}
+
+	user, err := c.db.GetUser(r.Context(), incoming.ID)
+	if err != nil {
+		respondWithError(w, http.StatusInternalServerError, "internal server error")
+	}
+
+	outgoing := dbUserToJSONUser(user)
+	if err := respondWithJson(w, http.StatusOK, outgoing); err != nil {
+		respondWithError(w, http.StatusInternalServerError, "internal server error")
+	}
+}
