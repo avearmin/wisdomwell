@@ -2,24 +2,28 @@ package server
 
 import (
 	"errors"
-	"github.com/joho/godotenv"
 	"log"
 	"net/http"
 	"os"
 	"time"
 
+	"github.com/joho/godotenv"
+
 	"github.com/avearmin/wisdomwell/internal/api"
 )
 
 func Start() {
-	//config, err := api.NewConfig()
-	//if err != nil {
-	//	log.Fatalf("error loading .env: %v", err)
-	//}
+	config, err := api.NewConfig()
+	if err != nil {
+		log.Fatalf("error loading .env: %v", err)
+	}
 
 	mux := http.NewServeMux()
 
 	mux.HandleFunc("GET /api/v1/healthz", api.HandlerHealthz)
+
+	mux.HandleFunc("GET /api/v1/users", config.HandlerGetUser)
+	mux.HandleFunc("POST /api/v1/users", config.HandlerCreateUser)
 
 	corsMux := middlewareCors(mux)
 
