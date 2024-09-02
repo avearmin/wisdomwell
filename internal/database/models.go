@@ -10,6 +10,31 @@ import (
 	"github.com/google/uuid"
 )
 
+type Like struct {
+	UserID  uuid.UUID
+	QuoteID uuid.UUID
+}
+
+type Quote struct {
+	ID        uuid.UUID
+	CreatedAt time.Time
+	UpdatedAt time.Time
+	UserID    uuid.UUID
+	Content   string
+}
+
+type QuoteTag struct {
+	QuoteID uuid.UUID
+	TagID   uuid.UUID
+}
+
+type Tag struct {
+	ID        uuid.UUID
+	CreatedAt time.Time
+	UpdatedAt time.Time
+	Name      string
+}
+
 type User struct {
 	ID        uuid.UUID
 	CreatedAt time.Time

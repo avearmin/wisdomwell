@@ -23,3 +23,21 @@ func dbUserToJSONUser(user database.User) User {
 		Name:      user.Name,
 	}
 }
+
+type Quote struct {
+	ID        uuid.UUID `json:"id"`
+	CreatedAt time.Time `json:"created_at"`
+	UpdatedAt time.Time `json:"update_at"`
+	UserID    uuid.UUID `json:"user_id"`
+	Content   string    `json:"content"`
+}
+
+func dbQuoteToJSONQuote(quote database.Quote) Quote {
+	return Quote{
+		ID:        quote.ID,
+		CreatedAt: quote.CreatedAt,
+		UpdatedAt: quote.UpdatedAt,
+		UserID:    quote.UserID,
+		Content:   quote.Content,
+	}
+}

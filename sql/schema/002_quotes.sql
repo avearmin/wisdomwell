@@ -8,5 +8,5 @@ CREATE TABLE quotes (
     FOREIGN KEY (User_ID) REFERENCES users(ID)
 );
 
--- -goose Down
+-- +goose Down
 DROP TABLE quotes;
