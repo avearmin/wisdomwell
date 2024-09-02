@@ -7,6 +7,7 @@ package database
 
 import (
 	"context"
+	"time"
 
 	"github.com/google/uuid"
 )
@@ -17,6 +18,39 @@ SELECT id, created_at, updated_at, user_id, content FROM quotes WHERE ID = $1
 
 func (q *Queries) GetQuote(ctx context.Context, id uuid.UUID) (Quote, error) {
 	row := q.db.QueryRowContext(ctx, getQuote, id)
+	var i Quote
+	err := row.Scan(
+		&i.ID,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+		&i.UserID,
+		&i.Content,
+	)
+	return i, err
+}
+
+const postQuote = `-- name: PostQuote :one
+INSERT INTO quotes (ID, Created_At, Updated_At, User_ID, Content)
+VALUES ($1, $2, $3, $4, $5)
+RETURNING id, created_at, updated_at, user_id, content
+`
+
+type PostQuoteParams struct {
+	ID        uuid.UUID
+	CreatedAt time.Time
+	UpdatedAt time.Time
+	UserID    uuid.UUID
+	Content   string
+}
+
+func (q *Queries) PostQuote(ctx context.Context, arg PostQuoteParams) (Quote, error) {
+	row := q.db.QueryRowContext(ctx, postQuote,
+		arg.ID,
+		arg.CreatedAt,
+		arg.UpdatedAt,
+		arg.UserID,
+		arg.Content,
+	)
 	var i Quote
 	err := row.Scan(
 		&i.ID,
