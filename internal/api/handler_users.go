@@ -16,6 +16,7 @@ func (c Config) HandlerCreateUser(w http.ResponseWriter, r *http.Request) {
 
 	if err := readParameters(r, &incoming); err != nil {
 		respondWithError(w, http.StatusInternalServerError, "internal server error")
+		return
 	}
 
 	user, err := c.db.CreateUser(r.Context(), database.CreateUserParams{
@@ -27,11 +28,13 @@ func (c Config) HandlerCreateUser(w http.ResponseWriter, r *http.Request) {
 	})
 	if err != nil {
 		respondWithError(w, http.StatusInternalServerError, "internal server error")
+		return
 	}
 
 	outgoing := dbUserToJSONUser(user)
 	if err := respondWithJson(w, http.StatusOK, outgoing); err != nil {
 		respondWithError(w, http.StatusInternalServerError, "internal server error")
+		return
 	}
 }
 
@@ -42,15 +45,18 @@ func (c Config) HandlerGetUser(w http.ResponseWriter, r *http.Request) {
 
 	if err := readParameters(r, &incoming); err != nil {
 		respondWithError(w, http.StatusBadRequest, "malformed request body")
+		return
 	}
 
 	user, err := c.db.GetUser(r.Context(), incoming.ID)
 	if err != nil {
 		respondWithError(w, http.StatusInternalServerError, "internal server error")
+		return
 	}
 
 	outgoing := dbUserToJSONUser(user)
 	if err := respondWithJson(w, http.StatusOK, outgoing); err != nil {
 		respondWithError(w, http.StatusInternalServerError, "internal server error")
+		return
 	}
 }
