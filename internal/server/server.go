@@ -20,13 +20,19 @@ func Start() {
 
 	mux := http.NewServeMux()
 
+	// healthz
 	mux.HandleFunc("GET /api/v1/healthz", api.HandlerHealthz)
 
+	// users
 	mux.HandleFunc("GET /api/v1/users", config.HandlerGetUser)
 	mux.HandleFunc("POST /api/v1/users", config.HandlerCreateUser)
 
+	// quotes
 	mux.HandleFunc("GET /api/v1/quotes", config.HandlerGetQuote)
 	mux.HandleFunc("POST /api/v1/quotes", config.HandlerPostQuote)
+
+	// likes
+	mux.HandleFunc("GET /api/v1/likes", config.HandlerGetLike)
 
 	corsMux := middlewareCors(mux)
 

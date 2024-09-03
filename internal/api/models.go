@@ -41,3 +41,15 @@ func dbQuoteToJSONQuote(quote database.Quote) Quote {
 		Content:   quote.Content,
 	}
 }
+
+type Like struct {
+	UserID  uuid.UUID `json:"user_id"`
+	QuoteID uuid.UUID `json:"quote_id"`
+}
+
+func dbLikeToJSONLike(like database.Like) Like {
+	return Like{
+		UserID:  like.UserID,
+		QuoteID: like.QuoteID,
+	}
+}
