@@ -25,6 +25,9 @@ func Start() {
 	mux.HandleFunc("GET /api/v1/users", config.HandlerGetUser)
 	mux.HandleFunc("POST /api/v1/users", config.HandlerCreateUser)
 
+	mux.HandleFunc("GET /api/v1/quotes", config.HandlerGetQuote)
+	mux.HandleFunc("POST /api/v1/quotes", config.HandlerPostQuote)
+
 	corsMux := middlewareCors(mux)
 
 	port, err := loadPort()
