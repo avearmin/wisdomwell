@@ -26,3 +26,21 @@ func (q *Queries) GetLike(ctx context.Context, arg GetLikeParams) (Like, error) 
 	err := row.Scan(&i.UserID, &i.QuoteID)
 	return i, err
 }
+
+const postLike = `-- name: PostLike :one
+INSERT INTO likes (User_ID, Quote_ID)
+VALUES ($1, $2)
+RETURNING user_id, quote_id
+`
+
+type PostLikeParams struct {
+	UserID  uuid.UUID
+	QuoteID uuid.UUID
+}
+
+func (q *Queries) PostLike(ctx context.Context, arg PostLikeParams) (Like, error) {
+	row := q.db.QueryRowContext(ctx, postLike, arg.UserID, arg.QuoteID)
+	var i Like
+	err := row.Scan(&i.UserID, &i.QuoteID)
+	return i, err
+}

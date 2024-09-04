@@ -33,6 +33,7 @@ func Start() {
 
 	// likes
 	mux.HandleFunc("GET /api/v1/likes", config.HandlerGetLike)
+	mux.HandleFunc("POST /api/v1/likes", config.HandlerPostLike)
 
 	corsMux := middlewareCors(mux)
 
