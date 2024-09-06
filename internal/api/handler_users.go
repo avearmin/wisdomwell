@@ -1,6 +1,8 @@
 package api
 
 import (
+	"database/sql"
+	"errors"
 	"net/http"
 	"time"
 
@@ -59,4 +61,28 @@ func (c Config) HandlerGetUser(w http.ResponseWriter, r *http.Request) {
 		respondWithError(w, http.StatusInternalServerError, "internal server error")
 		return
 	}
+}
+
+func (c Config) HandlerDeleteUser(w http.ResponseWriter, r *http.Request) {
+	incoming := struct {
+		ID uuid.UUID `json:"id"`
+	}{}
+
+	if err := readParameters(r, &incoming); err != nil {
+		respondWithJson(w, http.StatusBadRequest, "malformed request body")
+	}
+
+	if err := c.db.DeleteUser(r.Context(), incoming.ID); err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			respondWithError(w, http.StatusNotFound, "not found")
+		} else {
+			respondWithError(w, http.StatusInternalServerError, "internal server error")
+		}
+	}
+	outgoing := struct {
+		Status string `json:"status"`
+	}{
+		Status: "ok",
+	}
+	respondWithJson(w, http.StatusOK, outgoing)
 }
