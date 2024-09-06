@@ -11,6 +11,20 @@ import (
 	"github.com/google/uuid"
 )
 
+const deleteLike = `-- name: DeleteLike :exec
+DELETE FROM likes WHERE User_ID = $1 AND Quote_ID = $2
+`
+
+type DeleteLikeParams struct {
+	UserID  uuid.UUID
+	QuoteID uuid.UUID
+}
+
+func (q *Queries) DeleteLike(ctx context.Context, arg DeleteLikeParams) error {
+	_, err := q.db.ExecContext(ctx, deleteLike, arg.UserID, arg.QuoteID)
+	return err
+}
+
 const getLike = `-- name: GetLike :one
 SELECT user_id, quote_id FROM likes WHERE User_ID = $1 AND Quote_ID = $2
 `

@@ -65,3 +65,30 @@ func (c Config) HandlerPostQuote(w http.ResponseWriter, r *http.Request) {
 		respondWithError(w, http.StatusInternalServerError, "internal server error")
 	}
 }
+
+func (c Config) HandlerDeleteQuote(w http.ResponseWriter, r *http.Request) {
+	incoming := struct {
+		ID uuid.UUID `json:"id"`
+	}{}
+
+	if err := readParameters(r, &incoming); err != nil {
+		respondWithError(w, http.StatusBadRequest, "malformed request body")
+	}
+
+	if err := c.db.DeleteQuote(r.Context(), incoming.ID); err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			respondWithError(w, http.StatusNotFound, "not found")
+		} else {
+			respondWithError(w, http.StatusInternalServerError, "internal server error")
+		}
+	}
+	outgoing := struct {
+		Status string `json:"status"`
+	}{
+		Status: "ok",
+	}
+	if err := respondWithJson(w, http.StatusOK, outgoing); err != nil {
+		respondWithError(w, http.StatusInternalServerError, "internal server error")
+	}
+
+}

@@ -12,6 +12,15 @@ import (
 	"github.com/google/uuid"
 )
 
+const deleteQuote = `-- name: DeleteQuote :exec
+DELETE FROM quotes WHERE ID = $1
+`
+
+func (q *Queries) DeleteQuote(ctx context.Context, id uuid.UUID) error {
+	_, err := q.db.ExecContext(ctx, deleteQuote, id)
+	return err
+}
+
 const getQuote = `-- name: GetQuote :one
 SELECT id, created_at, updated_at, user_id, content FROM quotes WHERE ID = $1
 `
