@@ -29,8 +29,11 @@ func (c Config) HandlerCreateUser(w http.ResponseWriter, r *http.Request) {
 		Name:      incoming.Name,
 	})
 	if err != nil {
-		respondWithError(w, http.StatusInternalServerError, "internal server error")
-		return
+		if errors.Is(err, sql.ErrNoRows) {
+			respondWithError(w, http.StatusNotFound, "not found")
+		} else {
+			respondWithError(w, http.StatusInternalServerError, "internal server error")
+		}
 	}
 
 	outgoing := dbUserToJSONUser(user)
@@ -52,8 +55,11 @@ func (c Config) HandlerGetUser(w http.ResponseWriter, r *http.Request) {
 
 	user, err := c.db.GetUser(r.Context(), incoming.ID)
 	if err != nil {
-		respondWithError(w, http.StatusInternalServerError, "internal server error")
-		return
+		if errors.Is(err, sql.ErrNoRows) {
+			respondWithError(w, http.StatusNotFound, "not found")
+		} else {
+			respondWithError(w, http.StatusInternalServerError, "internal server error")
+		}
 	}
 
 	outgoing := dbUserToJSONUser(user)
