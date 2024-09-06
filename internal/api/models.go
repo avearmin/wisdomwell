@@ -53,3 +53,19 @@ func dbLikeToJSONLike(like database.Like) Like {
 		QuoteID: like.QuoteID,
 	}
 }
+
+type Tag struct {
+	ID        uuid.UUID `json:"id"`
+	CreatedAt time.Time `json:"created_at"`
+	UpdatedAt time.Time `json:"updated_at"`
+	Name      string    `json:"name"`
+}
+
+func dbTagToJSONTag(tag database.Tag) Tag {
+	return Tag{
+		ID: tag.ID,
+		CreatedAt: tag.CreatedAt,
+		UpdatedAt: tag.UpdatedAt,
+		Name: tag.Name,
+	}
+}
