@@ -26,10 +26,12 @@ func Start() {
 	// users
 	mux.HandleFunc("GET /api/v1/users", config.HandlerGetUser)
 	mux.HandleFunc("POST /api/v1/users", config.HandlerCreateUser)
+	mux.HandleFunc("DELETE /api/v1/users", config.HandlerDeleteUser)
 
 	// quotes
 	mux.HandleFunc("GET /api/v1/quotes", config.HandlerGetQuote)
 	mux.HandleFunc("POST /api/v1/quotes", config.HandlerPostQuote)
+	mux.HandleFunc("DELETE /api/v1/quotes", config.HandlerDeleteQuote)
 
 	// likes
 	mux.HandleFunc("GET /api/v1/likes", config.HandlerGetLike)
