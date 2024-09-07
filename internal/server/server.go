@@ -37,6 +37,11 @@ func Start() {
 	mux.HandleFunc("GET /api/v1/likes", config.HandlerGetLike)
 	mux.HandleFunc("POST /api/v1/likes", config.HandlerPostLike)
 	mux.HandleFunc("DELETE /api/v1/likes", config.HandlerDeleteLike)
+	
+	// tags
+	mux.HandleFunc("GET /api/v1/tags", config.HandlerGetTag)
+	mux.HandleFunc("POST /api/v1/tags", config.HandlerPostTag)
+	mux.HandleFunc("DELETE /api/v1/tags", config.HandlerDeleteTag)
 
 	corsMux := middlewareCors(mux)
 
