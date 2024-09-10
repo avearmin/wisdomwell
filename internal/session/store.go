@@ -1,7 +1,6 @@
 package session
 
 import (
-	"net/http"
 	"sync"
 	"time"
 
@@ -11,15 +10,13 @@ import (
 type Store struct {
 	sessions map[string]*Session
 	duration time.Duration
-	cookieName string
 	mu *sync.RWMutex
 }
 
-func NewStore(duration time.Duration, cookieName string) Store {
+func NewStore(duration time.Duration) Store {
 	return Store{
 		sessions: make(map[string]*Session),
 		duration: duration,
-		cookieName: cookieName,
 		mu: &sync.RWMutex{},
 	}
 }
@@ -40,6 +37,13 @@ func (s Store) CreateSession(userID uuid.UUID) string {
 	})
 
 	return sessionID
+}
+
+func (s Store) HasSession(id string) bool {
+	if _, ok := s.sessions[id]; !ok {
+		return false
+	}
+	return true
 }
 
 func (s Store) addSession(id string, session *Session) {

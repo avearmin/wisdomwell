@@ -3,13 +3,17 @@ package api
 import (
 	"database/sql"
 	"errors"
-	"github.com/avearmin/wisdomwell/internal/database"
-	"github.com/joho/godotenv"
 	"os"
+	"time"
+
+	"github.com/avearmin/wisdomwell/internal/database"
+	"github.com/avearmin/wisdomwell/internal/session"
+	"github.com/joho/godotenv"
 )
 
 type Config struct {
 	db *database.Queries
+	sessionStore session.Store
 }
 
 func NewConfig() (Config, error) {
@@ -29,8 +33,11 @@ func NewConfig() (Config, error) {
 
 	db := database.New(schema)
 
+	sessionStore := session.NewStore(time.Duration(time.Hour * 720))
+
 	c := Config{
 		db: db,
+		sessionStore: sessionStore,
 	}
 
 	return c, nil
