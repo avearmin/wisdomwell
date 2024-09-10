@@ -24,7 +24,7 @@ func NewStore(duration time.Duration, cookieName string) Store {
 	}
 }
 
-func (s Store) CreateSessionAndAddToCookie(userID uuid.UUID, w http.ResponseWriter) {
+func (s Store) CreateSession(userID uuid.UUID) string {
 	timeNow := time.Now()
 	session := &Session{
 		UserID: userID,
@@ -39,13 +39,7 @@ func (s Store) CreateSessionAndAddToCookie(userID uuid.UUID, w http.ResponseWrit
 		s.deleteSession(sessionID)
 	})
 
-	cookie := &http.Cookie{
-		Name: s.cookieName,
-		Value: sessionID,
-		Expires: timeNow.Add(s.duration),
-		SameSite: http.SameSiteStrictMode,
-	}
-	http.SetCookie(w, cookie)
+	return sessionID
 }
 
 func (s Store) addSession(id string, session *Session) {
