@@ -25,23 +25,23 @@ func Start() {
 
 	// users
 	mux.HandleFunc("GET /api/v1/users", config.HandlerGetUser)
-	mux.HandleFunc("POST /api/v1/users", config.HandlerCreateUser)
-	mux.HandleFunc("DELETE /api/v1/users", config.HandlerDeleteUser)
+	mux.HandleFunc("POST /api/v1/users", config.MiddlewareAuth(config.HandlerCreateUser))
+	mux.HandleFunc("DELETE /api/v1/users", config.MiddlewareAuth(config.HandlerDeleteUser))
 
 	// quotes
 	mux.HandleFunc("GET /api/v1/quotes", config.HandlerGetQuote)
-	mux.HandleFunc("POST /api/v1/quotes", config.HandlerPostQuote)
-	mux.HandleFunc("DELETE /api/v1/quotes", config.HandlerDeleteQuote)
+	mux.HandleFunc("POST /api/v1/quotes", config.MiddlewareAuth(config.HandlerPostQuote))
+	mux.HandleFunc("DELETE /api/v1/quotes", config.MiddlewareAuth(config.HandlerDeleteQuote))
 
 	// likes
 	mux.HandleFunc("GET /api/v1/likes", config.HandlerGetLike)
-	mux.HandleFunc("POST /api/v1/likes", config.HandlerPostLike)
-	mux.HandleFunc("DELETE /api/v1/likes", config.HandlerDeleteLike)
+	mux.HandleFunc("POST /api/v1/likes", config.MiddlewareAuth(config.HandlerPostLike))
+	mux.HandleFunc("DELETE /api/v1/likes", config.MiddlewareAuth(config.HandlerDeleteLike))
 	
 	// tags
 	mux.HandleFunc("GET /api/v1/tags", config.HandlerGetTag)
-	mux.HandleFunc("POST /api/v1/tags", config.HandlerPostTag)
-	mux.HandleFunc("DELETE /api/v1/tags", config.HandlerDeleteTag)
+	mux.HandleFunc("POST /api/v1/tags", config.MiddlewareAuth(config.HandlerPostTag))
+	mux.HandleFunc("DELETE /api/v1/tags", config.MiddlewareAuth(config.HandlerDeleteTag))
 
 	corsMux := middlewareCors(mux)
 

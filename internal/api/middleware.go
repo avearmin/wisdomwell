@@ -5,8 +5,8 @@ import (
 	"strings"
 )
 
-func (c Config) MiddlewareAuth(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+func (c Config) MiddlewareAuth(next http.HandlerFunc) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
 		authHeader := r.Header.Get("Authorization")
 
 		fields := strings.Fields(authHeader)
@@ -25,5 +25,5 @@ func (c Config) MiddlewareAuth(next http.Handler) http.Handler {
 		}
 
 		next.ServeHTTP(w, r)
-	})
+	}
 }
