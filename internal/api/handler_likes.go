@@ -9,28 +9,33 @@ import (
 )
 
 func (c Config) HandlerGetLike(w http.ResponseWriter, r *http.Request) {
-	incoming := struct {
-		UserID  uuid.UUID `json:"user_id"`
-		QuoteID uuid.UUID `json:"quote_id"`
-	}{}
+	quoteIDFromURL := r.URL.Query().Get("quote_id")
+	
+	quoteID, err := uuid.Parse(quoteIDFromURL)
+	if err != nil {
+		respondWithError(w, http.StatusBadRequest, "malformed uuid in url")
+		return
+	}
 
-	if err := readParameters(r, &incoming); err != nil {
-		respondWithError(w, http.StatusInternalServerError, "internal server error")
+	userIDFromURL := r.URL.Query().Get("user_id")
+	
+	userID, err := uuid.Parse(userIDFromURL)
+	if err != nil {
+		respondWithError(w, http.StatusBadRequest, "malformed uuid in url")
 		return
 	}
 
 	like, err := c.db.GetLike(r.Context(), database.GetLikeParams{
-		UserID:  incoming.UserID,
-		QuoteID: incoming.QuoteID,
+		UserID:  userID,
+		QuoteID: quoteID,
 	})
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			respondWithError(w, http.StatusNotFound, "not found")
-			return
 		} else {
 			respondWithError(w, http.StatusInternalServerError, "internal server error")
-			return
 		}
+		return
 	}
 
 	outgoing := dbLikeToJSONLike(like)
@@ -39,9 +44,8 @@ func (c Config) HandlerGetLike(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (c Config) HandlerPostLike(w http.ResponseWriter, r *http.Request) {
+func (c Config) HandlerPostLike(w http.ResponseWriter, r *http.Request, userID uuid.UUID) {
 	incoming := struct {
-		UserID  uuid.UUID `json:"user_id"`
 		QuoteID uuid.UUID `json:"quote_id"`
 	}{}
 
@@ -51,17 +55,16 @@ func (c Config) HandlerPostLike(w http.ResponseWriter, r *http.Request) {
 	}
 
 	like, err := c.db.PostLike(r.Context(), database.PostLikeParams{
-		UserID:  incoming.UserID,
+		UserID:  userID,
 		QuoteID: incoming.QuoteID,
 	})
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			respondWithError(w, http.StatusNotFound, "not found")
-			return
 		} else {
 			respondWithError(w, http.StatusInternalServerError, "internal server error")
-			return
 		}
+		return
 	}
 
 	outgoing := dbLikeToJSONLike(like)
@@ -70,18 +73,18 @@ func (c Config) HandlerPostLike(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (c Config) HandlerDeleteLike(w http.ResponseWriter, r *http.Request) {
+func (c Config) HandlerDeleteLike(w http.ResponseWriter, r *http.Request, userID uuid.UUID) {
 	incoming := struct {
-		UserID uuid.UUID `json:"user_id"`
 		QuoteID uuid.UUID `json:"quote_id"`
 	}{}
 
 	if err := readParameters(r, &incoming); err != nil {
 		respondWithError(w, http.StatusBadRequest, "malformed request body")
+		return
 	}
 
 	err := c.db.DeleteLike(r.Context(), database.DeleteLikeParams{
-		UserID: incoming.UserID,
+		UserID: userID,
 		QuoteID: incoming.QuoteID,
 	})
 	if err != nil {
@@ -90,7 +93,9 @@ func (c Config) HandlerDeleteLike(w http.ResponseWriter, r *http.Request) {
 		} else {
 			respondWithError(w, http.StatusInternalServerError, "internal server error")
 		}
+		return
 	}
+
 	outgoing := struct {
 		Status string `json:"status"`
 	}{

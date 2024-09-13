@@ -24,24 +24,23 @@ func Start() {
 	mux.HandleFunc("GET /api/v1/healthz", api.HandlerHealthz)
 
 	// users
-	mux.HandleFunc("GET /api/v1/users", config.HandlerGetUser)
-	mux.HandleFunc("POST /api/v1/users", config.MiddlewareAuth(config.HandlerCreateUser))
+	// TODO: route to get all users
+	mux.HandleFunc("GET /api/v1/users/{id}", config.HandlerGetUser)
 	mux.HandleFunc("DELETE /api/v1/users", config.MiddlewareAuth(config.HandlerDeleteUser))
 
 	// quotes
-	mux.HandleFunc("GET /api/v1/quotes", config.HandlerGetQuote)
+	// TODO: route to get all quotes
+	mux.HandleFunc("GET /api/v1/quotes/{id}", config.HandlerGetQuote)
 	mux.HandleFunc("POST /api/v1/quotes", config.MiddlewareAuth(config.HandlerPostQuote))
 	mux.HandleFunc("DELETE /api/v1/quotes", config.MiddlewareAuth(config.HandlerDeleteQuote))
 
 	// likes
-	mux.HandleFunc("GET /api/v1/likes", config.HandlerGetLike)
+	// TODO: route to get all likes
+	// TODO: route to get all likes from a specific user
+	// TODO: route to get all likes from a specific post
+	mux.HandleFunc("GET /api/v1/likes/{quote_id}/{user_id}", config.HandlerGetLike)
 	mux.HandleFunc("POST /api/v1/likes", config.MiddlewareAuth(config.HandlerPostLike))
 	mux.HandleFunc("DELETE /api/v1/likes", config.MiddlewareAuth(config.HandlerDeleteLike))
-	
-	// tags
-	mux.HandleFunc("GET /api/v1/tags", config.HandlerGetTag)
-	mux.HandleFunc("POST /api/v1/tags", config.MiddlewareAuth(config.HandlerPostTag))
-	mux.HandleFunc("DELETE /api/v1/tags", config.MiddlewareAuth(config.HandlerDeleteTag))
 
 	corsMux := middlewareCors(mux)
 

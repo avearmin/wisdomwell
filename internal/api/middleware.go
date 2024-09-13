@@ -3,9 +3,13 @@ package api
 import (
 	"net/http"
 	"strings"
+
+	"github.com/google/uuid"
 )
 
-func (c Config) MiddlewareAuth(next http.HandlerFunc) http.HandlerFunc {
+type authedHandler func(http.ResponseWriter, *http.Request, uuid.UUID)
+
+func (c Config) MiddlewareAuth(next authedHandler) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		authHeader := r.Header.Get("Authorization")
 
@@ -20,10 +24,13 @@ func (c Config) MiddlewareAuth(next http.HandlerFunc) http.HandlerFunc {
 
 		sessionID := fields[1]
 
-		if ok := c.sessionStore.HasSession(sessionID); !ok {
+		session, ok := c.sessionStore.Get(sessionID)
+		if !ok {
 			respondWithError(w, http.StatusNotFound, "session does not exist")
 		}
 
-		next.ServeHTTP(w, r)
+		userID := session.UserID
+
+		next(w, r, userID)
 	}
 }

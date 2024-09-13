@@ -10,16 +10,16 @@ import (
 )
 
 func (c Config) HandlerGetQuote(w http.ResponseWriter, r *http.Request) {
-	incoming := struct {
-		ID uuid.UUID `json:"id"`
-	}{}
-
-	if err := readParameters(r, &incoming); err != nil {
-		respondWithError(w, http.StatusBadRequest, "malformed request body")
+	idFromURL := r.URL.Query().Get("quote_id")
+	
+	id, err := uuid.Parse(idFromURL)
+	if err != nil {
+		respondWithError(w, http.StatusBadRequest, "malformed uuid in url")
 		return
 	}
 
-	quote, err := c.db.GetQuote(r.Context(), incoming.ID)
+
+	quote, err := c.db.GetQuote(r.Context(), id)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			respondWithError(w, http.StatusNotFound, "not found")
@@ -37,10 +37,9 @@ func (c Config) HandlerGetQuote(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (c Config) HandlerPostQuote(w http.ResponseWriter, r *http.Request) {
+func (c Config) HandlerPostQuote(w http.ResponseWriter, r *http.Request, userID uuid.UUID) {
 	incoming := struct {
 		Content string    `json:"content"`
-		UserID  uuid.UUID `json:"user_id"`
 	}{}
 
 	if err := readParameters(r, &incoming); err != nil {
@@ -53,7 +52,7 @@ func (c Config) HandlerPostQuote(w http.ResponseWriter, r *http.Request) {
 		CreatedAt: time.Now(),
 		UpdatedAt: time.Now(),
 		Content:   incoming.Content,
-		UserID:    incoming.UserID,
+		UserID:    userID,
 	})
 	if err != nil {
 		respondWithError(w, http.StatusInternalServerError, "internal server error")
@@ -66,13 +65,28 @@ func (c Config) HandlerPostQuote(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (c Config) HandlerDeleteQuote(w http.ResponseWriter, r *http.Request) {
+func (c Config) HandlerDeleteQuote(w http.ResponseWriter, r *http.Request, userID uuid.UUID) {
 	incoming := struct {
 		ID uuid.UUID `json:"id"`
 	}{}
 
 	if err := readParameters(r, &incoming); err != nil {
 		respondWithError(w, http.StatusBadRequest, "malformed request body")
+		return
+	}
+	
+	quote, err := c.db.GetQuote(r.Context(), incoming.ID)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			respondWithError(w, http.StatusNotFound, "not found")
+		} else {
+			respondWithError(w, http.StatusInternalServerError, "internal server error")
+		}
+		return
+	}
+	if quote.UserID != userID {
+		respondWithError(w, http.StatusForbidden, "forbidden")
+		return
 	}
 
 	if err := c.db.DeleteQuote(r.Context(), incoming.ID); err != nil {
@@ -81,7 +95,9 @@ func (c Config) HandlerDeleteQuote(w http.ResponseWriter, r *http.Request) {
 		} else {
 			respondWithError(w, http.StatusInternalServerError, "internal server error")
 		}
+		return
 	}
+
 	outgoing := struct {
 		Status string `json:"status"`
 	}{

@@ -34,6 +34,7 @@ func (c Config) HandlerCreateUser(w http.ResponseWriter, r *http.Request) {
 		} else {
 			respondWithError(w, http.StatusInternalServerError, "internal server error")
 		}
+		return
 	}
 
 	outgoing := dbUserToJSONUser(user)
@@ -44,22 +45,22 @@ func (c Config) HandlerCreateUser(w http.ResponseWriter, r *http.Request) {
 }
 
 func (c Config) HandlerGetUser(w http.ResponseWriter, r *http.Request) {
-	incoming := struct {
-		ID uuid.UUID `json:"id"`
-	}{}
-
-	if err := readParameters(r, &incoming); err != nil {
-		respondWithError(w, http.StatusBadRequest, "malformed request body")
+	idFromURL := r.URL.Query().Get("user_id")
+	
+	id, err := uuid.Parse(idFromURL)
+	if err != nil {
+		respondWithError(w, http.StatusBadRequest, "malformed uuid in url")
 		return
 	}
 
-	user, err := c.db.GetUser(r.Context(), incoming.ID)
+	user, err := c.db.GetUser(r.Context(), id)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			respondWithError(w, http.StatusNotFound, "not found")
 		} else {
 			respondWithError(w, http.StatusInternalServerError, "internal server error")
 		}
+		return
 	}
 
 	outgoing := dbUserToJSONUser(user)
@@ -69,21 +70,14 @@ func (c Config) HandlerGetUser(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (c Config) HandlerDeleteUser(w http.ResponseWriter, r *http.Request) {
-	incoming := struct {
-		ID uuid.UUID `json:"id"`
-	}{}
-
-	if err := readParameters(r, &incoming); err != nil {
-		respondWithError(w, http.StatusBadRequest, "malformed request body")
-	}
-
-	if err := c.db.DeleteUser(r.Context(), incoming.ID); err != nil {
+func (c Config) HandlerDeleteUser(w http.ResponseWriter, r *http.Request, userID uuid.UUID) {
+	if err := c.db.DeleteUser(r.Context(), userID); err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			respondWithError(w, http.StatusNotFound, "not found")
 		} else {
 			respondWithError(w, http.StatusInternalServerError, "internal server error")
 		}
+		return
 	}
 	outgoing := struct {
 		Status string `json:"status"`

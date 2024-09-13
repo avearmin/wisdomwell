@@ -21,6 +21,14 @@ func NewStore(duration time.Duration) Store {
 	}
 }
 
+func (s Store) Get(sessionID string) (*Session, bool) {
+	session, ok := s.sessions[sessionID]
+	if !ok {
+		return nil, false
+	}
+	return session, true
+}
+
 func (s Store) CreateSession(userID uuid.UUID) string {
 	timeNow := time.Now()
 	session := &Session{
