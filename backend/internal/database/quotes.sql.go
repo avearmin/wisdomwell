@@ -21,6 +21,39 @@ func (q *Queries) DeleteQuote(ctx context.Context, id uuid.UUID) error {
 	return err
 }
 
+const getAllQuotes = `-- name: GetAllQuotes :many
+SELECT id, created_at, updated_at, user_id, content FROM quotes
+`
+
+func (q *Queries) GetAllQuotes(ctx context.Context) ([]Quote, error) {
+	rows, err := q.db.QueryContext(ctx, getAllQuotes)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Quote
+	for rows.Next() {
+		var i Quote
+		if err := rows.Scan(
+			&i.ID,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+			&i.UserID,
+			&i.Content,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const getQuote = `-- name: GetQuote :one
 SELECT id, created_at, updated_at, user_id, content FROM quotes WHERE ID = $1
 `

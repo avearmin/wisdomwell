@@ -1,3 +1,6 @@
+-- name: GetAllQuoteTags :many
+SELECT * FROM quote_tags;
+
 -- name: GetQuoteTag :one
 SELECT * FROM quote_tags 
 WHERE Quote_ID = $1 AND Tag_ID = $2;

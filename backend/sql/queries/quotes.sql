@@ -1,3 +1,6 @@
+-- name: GetAllQuotes :many
+SELECT * FROM quotes;
+
 -- name: GetQuote :one
 SELECT * FROM quotes WHERE ID = $1;
 

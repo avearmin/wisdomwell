@@ -1,3 +1,6 @@
+-- name: GetAllTags :many
+SELECT * FROM tags;
+
 -- name: GetTag :one
 SELECT * FROM tags WHERE ID = $1;
 

@@ -25,6 +25,33 @@ func (q *Queries) DeleteLike(ctx context.Context, arg DeleteLikeParams) error {
 	return err
 }
 
+const getAllLikes = `-- name: GetAllLikes :many
+SELECT user_id, quote_id FROM likes
+`
+
+func (q *Queries) GetAllLikes(ctx context.Context) ([]Like, error) {
+	rows, err := q.db.QueryContext(ctx, getAllLikes)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Like
+	for rows.Next() {
+		var i Like
+		if err := rows.Scan(&i.UserID, &i.QuoteID); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const getLike = `-- name: GetLike :one
 SELECT user_id, quote_id FROM likes WHERE User_ID = $1 AND Quote_ID = $2
 `
