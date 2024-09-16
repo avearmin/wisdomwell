@@ -41,6 +41,16 @@ func Start() {
 	mux.HandleFunc("GET /api/v1/likes/{quote_id}/{user_id}", config.HandlerGetLike)
 	mux.HandleFunc("POST /api/v1/likes", config.MiddlewareAuth(config.HandlerPostLike))
 	mux.HandleFunc("DELETE /api/v1/likes", config.MiddlewareAuth(config.HandlerDeleteLike))
+	
+	// tags
+	// TODO: Add get all tags
+	// TODO: Add get specific tag
+
+	//quote tags
+	// TODO: Get all tags
+	// TODO: Get all tags from a specific quote
+	// TODO: Get all quotes from a specific tag
+	mux.HandleFunc("GET /api/v1/quotetags/{quote_id}/{tag_id}", config.HandlerGetQuoteTag)
 
 	corsMux := middlewareCors(mux)
 

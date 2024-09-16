@@ -69,3 +69,15 @@ func dbTagToJSONTag(tag database.Tag) Tag {
 		Name: tag.Name,
 	}
 }
+
+type QuoteTag struct {
+	QuoteID uuid.UUID `json:"quote_id"`
+	TagID   uuid.UUID `json:"tag_id"`
+}
+
+func dbQuoteTagToJSONQuoteTag(quoteTag database.QuoteTag) QuoteTag {
+	return QuoteTag {
+		QuoteID: quoteTag.QuoteID,
+		TagID: quoteTag.TagID,
+	}
+}
