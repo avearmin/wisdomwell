@@ -9,6 +9,23 @@ import (
 	"time"
 )
 
+func (c Config) HandlerGetAllQuotes(w http.ResponseWriter, r *http.Request) {
+	quotes, err := c.db.GetAllQuotes(r.Context())
+	if err != nil {
+		respondWithError(w, http.StatusInternalServerError, "internal server error")
+		return
+	}
+
+	outgoing := make([]Quote, len(quotes))
+	for i, quote := range quotes {
+		outgoing[i] = dbQuoteToJSONQuote(quote)
+	}
+
+	if err := respondWithJson(w, http.StatusOK, outgoing); err != nil {
+		respondWithError(w, http.StatusInternalServerError, "internal server error")
+	}
+}
+
 func (c Config) HandlerGetQuote(w http.ResponseWriter, r *http.Request) {
 	idFromURL := r.URL.Query().Get("quote_id")
 	

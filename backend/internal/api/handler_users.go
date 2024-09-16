@@ -10,6 +10,23 @@ import (
 	"github.com/google/uuid"
 )
 
+func (c Config) HandlerGetAllUsers(w http.ResponseWriter, r *http.Request) {
+	users, err := c.db.GetAllUsers(r.Context())
+	if err != nil {
+		respondWithError(w, http.StatusInternalServerError, "internal server error")
+		return
+	}
+
+	outgoing := make([]User, len(users))
+	for i, user := range users {
+		outgoing[i] = dbUserToJSONUser(user)
+	}
+
+	if err := respondWithJson(w, http.StatusOK, outgoing); err != nil {
+		respondWithError(w, http.StatusInternalServerError, "internal server error")
+	}
+}
+
 func (c Config) HandlerCreateUser(w http.ResponseWriter, r *http.Request) {
 	incoming := struct {
 		Name  string `json:"name"`

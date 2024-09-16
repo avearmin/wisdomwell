@@ -8,6 +8,23 @@ import (
 	"net/http"
 )
 
+func (c Config) HandlerGetAllLikes(w http.ResponseWriter, r *http.Request) {
+	likes, err := c.db.GetAllLikes(r.Context())
+	if err != nil {
+		respondWithError(w, http.StatusInternalServerError, "internal server error")
+		return
+	}
+
+	outgoing := make([]Like, len(likes))
+	for i, like := range likes {
+		outgoing[i] = dbLikeToJSONLike(like)
+	}
+
+	if err := respondWithJson(w, http.StatusOK, outgoing); err != nil {
+		respondWithError(w, http.StatusInternalServerError, "internal server error")
+	}
+}
+
 func (c Config) HandlerGetLike(w http.ResponseWriter, r *http.Request) {
 	quoteIDFromURL := r.URL.Query().Get("quote_id")
 	

@@ -24,20 +24,20 @@ func Start() {
 	mux.HandleFunc("GET /api/v1/healthz", api.HandlerHealthz)
 
 	// users
-	// TODO: route to get all users
+	mux.HandleFunc("GET /api/v1/users", config.HandlerGetAllUsers)
 	mux.HandleFunc("GET /api/v1/users/{id}", config.HandlerGetUser)
 	mux.HandleFunc("DELETE /api/v1/users", config.MiddlewareAuth(config.HandlerDeleteUser))
 
 	// quotes
-	// TODO: route to get all quotes
+	mux.HandleFunc("GET /api/v1/quotes", config.HandlerGetAllQuotes)
 	mux.HandleFunc("GET /api/v1/quotes/{id}", config.HandlerGetQuote)
 	mux.HandleFunc("POST /api/v1/quotes", config.MiddlewareAuth(config.HandlerPostQuote))
 	mux.HandleFunc("DELETE /api/v1/quotes", config.MiddlewareAuth(config.HandlerDeleteQuote))
 
 	// likes
-	// TODO: route to get all likes
 	// TODO: route to get all likes from a specific user
 	// TODO: route to get all likes from a specific post
+	mux.HandleFunc("GET /api/v1/likes", config.HandlerGetAllLikes)
 	mux.HandleFunc("GET /api/v1/likes/{quote_id}/{user_id}", config.HandlerGetLike)
 	mux.HandleFunc("POST /api/v1/likes", config.MiddlewareAuth(config.HandlerPostLike))
 	mux.HandleFunc("DELETE /api/v1/likes", config.MiddlewareAuth(config.HandlerDeleteLike))
@@ -46,10 +46,10 @@ func Start() {
 	// TODO: Add get all tags
 	// TODO: Add get specific tag
 
-	//quote tags
-	// TODO: Get all tags
+	// quote tags
 	// TODO: Get all tags from a specific quote
 	// TODO: Get all quotes from a specific tag
+	mux.HandleFunc("GET /api/v1/quotetags", config.HandlerGetAllQuoteTags)
 	mux.HandleFunc("GET /api/v1/quotetags/{quote_id}/{tag_id}", config.HandlerGetQuoteTag)
 
 	corsMux := middlewareCors(mux)

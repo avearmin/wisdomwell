@@ -9,6 +9,23 @@ import (
 	"github.com/google/uuid"
 )
 
+func (c Config) HandlerGetAllQuoteTags(w http.ResponseWriter, r *http.Request) {
+	quoteTags, err := c.db.GetAllQuoteTags(r.Context())
+	if err != nil {
+		respondWithError(w, http.StatusInternalServerError, "internal server error")
+		return
+	}
+
+	outgoing := make([]QuoteTag, len(quoteTags))
+	for i, quoteTag := range quoteTags {
+		outgoing[i] = dbQuoteTagToJSONQuoteTag(quoteTag)
+	}
+
+	if err := respondWithJson(w, http.StatusOK, outgoing); err != nil {
+		respondWithError(w, http.StatusInternalServerError, "internal server error")
+	}
+}
+
 func (c Config) HandlerGetQuoteTag(w http.ResponseWriter, r *http.Request) {
 	quoteIDFromURL := r.URL.Query().Get("quote_id")
 	
