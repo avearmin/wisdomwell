@@ -63,7 +63,7 @@ func (c Config) HandlerCreateUser(w http.ResponseWriter, r *http.Request) {
 
 func (c Config) HandlerGetUser(w http.ResponseWriter, r *http.Request) {
 	idFromURL := r.URL.Query().Get("user_id")
-	
+
 	id, err := uuid.Parse(idFromURL)
 	if err != nil {
 		respondWithError(w, http.StatusBadRequest, "malformed uuid in url")
@@ -89,7 +89,7 @@ func (c Config) HandlerGetUser(w http.ResponseWriter, r *http.Request) {
 
 func (c Config) HandlerGetAllQuotesFromUser(w http.ResponseWriter, r *http.Request) {
 	idFromURL := r.URL.Query().Get("user_id")
-	
+
 	id, err := uuid.Parse(idFromURL)
 	if err != nil {
 		respondWithError(w, http.StatusBadRequest, "malformed uuid in url")

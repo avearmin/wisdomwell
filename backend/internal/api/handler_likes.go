@@ -3,9 +3,11 @@ package api
 import (
 	"database/sql"
 	"errors"
+	"net/http"
+	"time"
+
 	"github.com/avearmin/wisdomwell/internal/database"
 	"github.com/google/uuid"
-	"net/http"
 )
 
 func (c Config) HandlerGetAllLikes(w http.ResponseWriter, r *http.Request) {
@@ -27,7 +29,7 @@ func (c Config) HandlerGetAllLikes(w http.ResponseWriter, r *http.Request) {
 
 func (c Config) HandlerGetLike(w http.ResponseWriter, r *http.Request) {
 	quoteIDFromURL := r.URL.Query().Get("quote_id")
-	
+
 	quoteID, err := uuid.Parse(quoteIDFromURL)
 	if err != nil {
 		respondWithError(w, http.StatusBadRequest, "malformed uuid in url")
@@ -35,7 +37,7 @@ func (c Config) HandlerGetLike(w http.ResponseWriter, r *http.Request) {
 	}
 
 	userIDFromURL := r.URL.Query().Get("user_id")
-	
+
 	userID, err := uuid.Parse(userIDFromURL)
 	if err != nil {
 		respondWithError(w, http.StatusBadRequest, "malformed uuid in url")
@@ -74,6 +76,7 @@ func (c Config) HandlerPostLike(w http.ResponseWriter, r *http.Request, userID u
 	like, err := c.db.PostLike(r.Context(), database.PostLikeParams{
 		UserID:  userID,
 		QuoteID: incoming.QuoteID,
+		CreatedAt: time.Now(),
 	})
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
@@ -101,7 +104,7 @@ func (c Config) HandlerDeleteLike(w http.ResponseWriter, r *http.Request, userID
 	}
 
 	err := c.db.DeleteLike(r.Context(), database.DeleteLikeParams{
-		UserID: userID,
+		UserID:  userID,
 		QuoteID: incoming.QuoteID,
 	})
 	if err != nil {

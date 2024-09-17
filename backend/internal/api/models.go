@@ -43,14 +43,16 @@ func dbQuoteToJSONQuote(quote database.Quote) Quote {
 }
 
 type Like struct {
-	UserID  uuid.UUID `json:"user_id"`
-	QuoteID uuid.UUID `json:"quote_id"`
+	UserID    uuid.UUID `json:"user_id"`
+	QuoteID   uuid.UUID `json:"quote_id"`
+	CreatedAt time.Time `json:"created_at"`
 }
 
 func dbLikeToJSONLike(like database.Like) Like {
 	return Like{
-		UserID:  like.UserID,
-		QuoteID: like.QuoteID,
+		UserID:    like.UserID,
+		QuoteID:   like.QuoteID,
+		CreatedAt: like.CreatedAt,
 	}
 }
 
@@ -63,10 +65,10 @@ type Tag struct {
 
 func dbTagToJSONTag(tag database.Tag) Tag {
 	return Tag{
-		ID: tag.ID,
+		ID:        tag.ID,
 		CreatedAt: tag.CreatedAt,
 		UpdatedAt: tag.UpdatedAt,
-		Name: tag.Name,
+		Name:      tag.Name,
 	}
 }
 
@@ -76,8 +78,8 @@ type QuoteTag struct {
 }
 
 func dbQuoteTagToJSONQuoteTag(quoteTag database.QuoteTag) QuoteTag {
-	return QuoteTag {
+	return QuoteTag{
 		QuoteID: quoteTag.QuoteID,
-		TagID: quoteTag.TagID,
+		TagID:   quoteTag.TagID,
 	}
 }

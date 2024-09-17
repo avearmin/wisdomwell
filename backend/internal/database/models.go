@@ -11,8 +11,9 @@ import (
 )
 
 type Like struct {
-	UserID  uuid.UUID
-	QuoteID uuid.UUID
+	UserID    uuid.UUID
+	QuoteID   uuid.UUID
+	CreatedAt time.Time
 }
 
 type Quote struct {

@@ -28,7 +28,7 @@ func (c Config) HandlerGetAllQuoteTags(w http.ResponseWriter, r *http.Request) {
 
 func (c Config) HandlerGetQuoteTag(w http.ResponseWriter, r *http.Request) {
 	quoteIDFromURL := r.URL.Query().Get("quote_id")
-	
+
 	quoteID, err := uuid.Parse(quoteIDFromURL)
 	if err != nil {
 		respondWithError(w, http.StatusBadRequest, "malformed uuid in url")
@@ -36,7 +36,7 @@ func (c Config) HandlerGetQuoteTag(w http.ResponseWriter, r *http.Request) {
 	}
 
 	tagIDFromURL := r.URL.Query().Get("tag_id")
-	
+
 	tagID, err := uuid.Parse(tagIDFromURL)
 	if err != nil {
 		respondWithError(w, http.StatusBadRequest, "malformed uuid in url")
@@ -45,7 +45,7 @@ func (c Config) HandlerGetQuoteTag(w http.ResponseWriter, r *http.Request) {
 
 	quoteTag, err := c.db.GetQuoteTag(r.Context(), database.GetQuoteTagParams{
 		QuoteID: quoteID,
-		TagID: tagID,
+		TagID:   tagID,
 	})
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {

@@ -7,6 +7,7 @@ package database
 
 import (
 	"context"
+	"time"
 
 	"github.com/google/uuid"
 )
@@ -26,7 +27,7 @@ func (q *Queries) DeleteLike(ctx context.Context, arg DeleteLikeParams) error {
 }
 
 const getAllLikes = `-- name: GetAllLikes :many
-SELECT user_id, quote_id FROM likes
+SELECT user_id, quote_id, created_at FROM likes
 `
 
 func (q *Queries) GetAllLikes(ctx context.Context) ([]Like, error) {
@@ -38,7 +39,7 @@ func (q *Queries) GetAllLikes(ctx context.Context) ([]Like, error) {
 	var items []Like
 	for rows.Next() {
 		var i Like
-		if err := rows.Scan(&i.UserID, &i.QuoteID); err != nil {
+		if err := rows.Scan(&i.UserID, &i.QuoteID, &i.CreatedAt); err != nil {
 			return nil, err
 		}
 		items = append(items, i)
@@ -53,7 +54,7 @@ func (q *Queries) GetAllLikes(ctx context.Context) ([]Like, error) {
 }
 
 const getLike = `-- name: GetLike :one
-SELECT user_id, quote_id FROM likes WHERE User_ID = $1 AND Quote_ID = $2
+SELECT user_id, quote_id, created_at FROM likes WHERE User_ID = $1 AND Quote_ID = $2
 `
 
 type GetLikeParams struct {
@@ -64,24 +65,25 @@ type GetLikeParams struct {
 func (q *Queries) GetLike(ctx context.Context, arg GetLikeParams) (Like, error) {
 	row := q.db.QueryRowContext(ctx, getLike, arg.UserID, arg.QuoteID)
 	var i Like
-	err := row.Scan(&i.UserID, &i.QuoteID)
+	err := row.Scan(&i.UserID, &i.QuoteID, &i.CreatedAt)
 	return i, err
 }
 
 const postLike = `-- name: PostLike :one
-INSERT INTO likes (User_ID, Quote_ID)
-VALUES ($1, $2)
-RETURNING user_id, quote_id
+INSERT INTO likes (User_ID, Quote_ID, Created_At)
+VALUES ($1, $2, $3)
+RETURNING user_id, quote_id, created_at
 `
 
 type PostLikeParams struct {
-	UserID  uuid.UUID
-	QuoteID uuid.UUID
+	UserID    uuid.UUID
+	QuoteID   uuid.UUID
+	CreatedAt time.Time
 }
 
 func (q *Queries) PostLike(ctx context.Context, arg PostLikeParams) (Like, error) {
-	row := q.db.QueryRowContext(ctx, postLike, arg.UserID, arg.QuoteID)
+	row := q.db.QueryRowContext(ctx, postLike, arg.UserID, arg.QuoteID, arg.CreatedAt)
 	var i Like
-	err := row.Scan(&i.UserID, &i.QuoteID)
+	err := row.Scan(&i.UserID, &i.QuoteID, &i.CreatedAt)
 	return i, err
 }

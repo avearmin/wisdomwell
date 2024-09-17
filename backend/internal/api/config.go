@@ -12,7 +12,7 @@ import (
 )
 
 type Config struct {
-	db *database.Queries
+	db           *database.Queries
 	sessionStore session.Store
 }
 
@@ -36,7 +36,7 @@ func NewConfig() (Config, error) {
 	sessionStore := session.NewStore(time.Duration(time.Hour * 720))
 
 	c := Config{
-		db: db,
+		db:           db,
 		sessionStore: sessionStore,
 	}
 

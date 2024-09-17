@@ -28,13 +28,12 @@ func (c Config) HandlerGetAllQuotes(w http.ResponseWriter, r *http.Request) {
 
 func (c Config) HandlerGetQuote(w http.ResponseWriter, r *http.Request) {
 	idFromURL := r.URL.Query().Get("quote_id")
-	
+
 	id, err := uuid.Parse(idFromURL)
 	if err != nil {
 		respondWithError(w, http.StatusBadRequest, "malformed uuid in url")
 		return
 	}
-
 
 	quote, err := c.db.GetQuote(r.Context(), id)
 	if err != nil {
@@ -56,7 +55,7 @@ func (c Config) HandlerGetQuote(w http.ResponseWriter, r *http.Request) {
 
 func (c Config) HandlerPostQuote(w http.ResponseWriter, r *http.Request, userID uuid.UUID) {
 	incoming := struct {
-		Content string    `json:"content"`
+		Content string `json:"content"`
 	}{}
 
 	if err := readParameters(r, &incoming); err != nil {
@@ -91,7 +90,7 @@ func (c Config) HandlerDeleteQuote(w http.ResponseWriter, r *http.Request, userI
 		respondWithError(w, http.StatusBadRequest, "malformed request body")
 		return
 	}
-	
+
 	quote, err := c.db.GetQuote(r.Context(), incoming.ID)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
