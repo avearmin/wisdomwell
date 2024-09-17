@@ -27,7 +27,7 @@ func Start() {
 	mux.HandleFunc("GET /api/v1/users", config.HandlerGetAllUsers)
 	mux.HandleFunc("GET /api/v1/users/{user_id}", config.HandlerGetUser)
 	mux.HandleFunc("GET /api/v1/users/{user_id}/quotes", config.HandlerGetAllQuotesFromUser)
-	// mux.HandleFunc("GET /api/v1/users/{user_id}/likes", config.HandlerGetAllLikesFromUser)
+	mux.HandleFunc("GET /api/v1/users/{user_id}/likes", config.HandlerGetAllLikesFromUser)
 	mux.HandleFunc("DELETE /api/v1/users", config.MiddlewareAuth(config.HandlerDeleteUser))
 
 	// quotes
@@ -37,7 +37,6 @@ func Start() {
 	mux.HandleFunc("DELETE /api/v1/quotes", config.MiddlewareAuth(config.HandlerDeleteQuote))
 
 	// likes
-	// TODO: route to get all likes from a specific user
 	mux.HandleFunc("GET /api/v1/likes", config.HandlerGetAllLikes)
 	mux.HandleFunc("GET /api/v1/likes/{quote_id}/{user_id}", config.HandlerGetLike)
 	mux.HandleFunc("POST /api/v1/likes", config.MiddlewareAuth(config.HandlerPostLike))

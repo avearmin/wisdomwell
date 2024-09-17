@@ -116,6 +116,36 @@ func (c Config) HandlerGetAllQuotesFromUser(w http.ResponseWriter, r *http.Reque
 	}
 }
 
+func (c Config) HandlerGetAllLikesFromUser(w http.ResponseWriter, r *http.Request) {
+	idFromURL := r.URL.Query().Get("user_id")
+
+	id, err := uuid.Parse(idFromURL)
+	if err != nil {
+		respondWithError(w, http.StatusBadRequest, "malformed uuid in url")
+		return
+	}
+
+	likes, err := c.db.GetAllLikesFromUser(r.Context(), id)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			respondWithError(w, http.StatusNotFound, "not found")
+		} else {
+			respondWithError(w, http.StatusInternalServerError, "internal server error")
+		}
+		return
+	}
+
+	outgoing := make([]Like, len(likes))
+	for i, like := range likes {
+		outgoing[i] = dbLikeToJSONLike(like)
+	}
+
+	if err := respondWithJson(w, http.StatusOK, outgoing); err != nil {
+		respondWithError(w, http.StatusInternalServerError, "internal server error")
+	}
+}
+
+
 func (c Config) HandlerDeleteUser(w http.ResponseWriter, r *http.Request, userID uuid.UUID) {
 	if err := c.db.DeleteUser(r.Context(), userID); err != nil {
 		if errors.Is(err, sql.ErrNoRows) {

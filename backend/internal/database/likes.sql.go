@@ -53,6 +53,34 @@ func (q *Queries) GetAllLikes(ctx context.Context) ([]Like, error) {
 	return items, nil
 }
 
+const getAllLikesFromUser = `-- name: GetAllLikesFromUser :many
+SELECT user_id, quote_id, created_at FROM likes WHERE User_ID = $1
+ORDER BY Created_At DESC
+`
+
+func (q *Queries) GetAllLikesFromUser(ctx context.Context, userID uuid.UUID) ([]Like, error) {
+	rows, err := q.db.QueryContext(ctx, getAllLikesFromUser, userID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Like
+	for rows.Next() {
+		var i Like
+		if err := rows.Scan(&i.UserID, &i.QuoteID, &i.CreatedAt); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const getLike = `-- name: GetLike :one
 SELECT user_id, quote_id, created_at FROM likes WHERE User_ID = $1 AND Quote_ID = $2
 `

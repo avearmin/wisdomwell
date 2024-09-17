@@ -11,3 +11,7 @@ RETURNING *;
 
 -- name: DeleteLike :exec
 DELETE FROM likes WHERE User_ID = $1 AND Quote_ID = $2;
+
+-- name: GetAllLikesFromUser :many
+SELECT * FROM likes WHERE User_ID = $1
+ORDER BY Created_At DESC;

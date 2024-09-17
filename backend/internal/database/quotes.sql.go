@@ -56,7 +56,7 @@ func (q *Queries) GetAllQuotes(ctx context.Context) ([]Quote, error) {
 
 const getAllQuotesFromUser = `-- name: GetAllQuotesFromUser :many
 SELECT id, created_at, updated_at, user_id, content FROM quotes WHERE User_ID = $1 
-ORDER BY updated_at DESC
+ORDER BY Updated_At DESC
 `
 
 func (q *Queries) GetAllQuotesFromUser(ctx context.Context, userID uuid.UUID) ([]Quote, error) {
