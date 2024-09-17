@@ -11,3 +11,7 @@ RETURNING *;
 
 -- name: DeleteQuote :exec
 DELETE FROM quotes WHERE ID = $1;
+
+-- name: GetAllQuotesFromUser :many
+SELECT * FROM quotes WHERE User_ID = $1 
+ORDER BY updated_at DESC;

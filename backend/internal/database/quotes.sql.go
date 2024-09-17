@@ -54,6 +54,40 @@ func (q *Queries) GetAllQuotes(ctx context.Context) ([]Quote, error) {
 	return items, nil
 }
 
+const getAllQuotesFromUser = `-- name: GetAllQuotesFromUser :many
+SELECT id, created_at, updated_at, user_id, content FROM quotes WHERE User_ID = $1 
+ORDER BY updated_at DESC
+`
+
+func (q *Queries) GetAllQuotesFromUser(ctx context.Context, userID uuid.UUID) ([]Quote, error) {
+	rows, err := q.db.QueryContext(ctx, getAllQuotesFromUser, userID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Quote
+	for rows.Next() {
+		var i Quote
+		if err := rows.Scan(
+			&i.ID,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+			&i.UserID,
+			&i.Content,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const getQuote = `-- name: GetQuote :one
 SELECT id, created_at, updated_at, user_id, content FROM quotes WHERE ID = $1
 `
