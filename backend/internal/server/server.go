@@ -43,7 +43,7 @@ func Start() {
 	mux.HandleFunc("DELETE /api/v1/likes", config.MiddlewareAuth(config.HandlerDeleteLike))
 
 	// tags
-	// TODO: Add get all tags
+	mux.HandleFunc("GET /api/v1/tags", config.HandlerGetAllLikes)
 	// TODO: Add get specific tag
 
 	// quote tags
