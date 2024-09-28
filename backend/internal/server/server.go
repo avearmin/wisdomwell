@@ -44,7 +44,7 @@ func Start() {
 
 	// tags
 	mux.HandleFunc("GET /api/v1/tags", config.HandlerGetAllLikes)
-	// TODO: Add get specific tag
+	mux.HandleFunc("GET /api/v1/tags/{tag_id}", config.HandlerGetTag)
 
 	// quote tags
 	// TODO: Get all tags from a specific quote
