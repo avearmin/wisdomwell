@@ -15,3 +15,8 @@ DELETE FROM quotes WHERE ID = $1;
 -- name: GetAllQuotesFromUser :many
 SELECT * FROM quotes WHERE User_ID = $1 
 ORDER BY Updated_At DESC;
+
+-- name: GetRandomQuote :one
+SELECT * FROM quotes
+ORDER BY RANDOM()
+LIMIT 1;

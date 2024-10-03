@@ -35,6 +35,7 @@ func Start() {
 	mux.HandleFunc("GET /api/v1/quotes/{quote_id}", config.HandlerGetQuote)
 	mux.HandleFunc("POST /api/v1/quotes", config.MiddlewareAuth(config.HandlerPostQuote))
 	mux.HandleFunc("DELETE /api/v1/quotes", config.MiddlewareAuth(config.HandlerDeleteQuote))
+	mux.HandleFunc("GET /api/v1/quotes/random", config.HandlerGetRandomQuote)
 
 	// likes
 	mux.HandleFunc("GET /api/v1/likes", config.HandlerGetAllLikes)

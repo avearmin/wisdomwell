@@ -105,6 +105,25 @@ func (q *Queries) GetQuote(ctx context.Context, id uuid.UUID) (Quote, error) {
 	return i, err
 }
 
+const getRandomQuote = `-- name: GetRandomQuote :one
+SELECT id, created_at, updated_at, user_id, content FROM quotes
+ORDER BY RANDOM()
+LIMIT 1
+`
+
+func (q *Queries) GetRandomQuote(ctx context.Context) (Quote, error) {
+	row := q.db.QueryRowContext(ctx, getRandomQuote)
+	var i Quote
+	err := row.Scan(
+		&i.ID,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+		&i.UserID,
+		&i.Content,
+	)
+	return i, err
+}
+
 const postQuote = `-- name: PostQuote :one
 INSERT INTO quotes (ID, Created_At, Updated_At, User_ID, Content)
 VALUES ($1, $2, $3, $4, $5)
