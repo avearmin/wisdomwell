@@ -10,6 +10,8 @@ import (
 	"github.com/joho/godotenv"
 
 	"github.com/avearmin/wisdomwell/internal/api"
+
+	_ "github.com/lib/pq"
 )
 
 func Start() {

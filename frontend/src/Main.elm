@@ -1,9 +1,9 @@
-module HomePage exposing (main)
+module Main exposing (main)
 
 import Browser
 import Html exposing (Html, button, div, text)
-import Html.Events exposing (onClick)
-import Http exposing (expectJson, get)
+import Html.Events as Events
+import Http
 import Json.Decode as Decode
 
 
@@ -21,7 +21,7 @@ type alias Model =
     { apiUrl : String
     , quote : Maybe Quote
     , isLoading : Bool
-    , error : Maybe String
+    , error : Maybe Http.Error
     }
 
 
@@ -38,10 +38,17 @@ update msg model =
             , fetchQuoteFromBackend model.apiUrl
             )
 
-        _ ->
-            ( model
-            , Cmd.none
-            )
+        FetchQuoteResponse result ->
+            case result of
+                Ok quote ->
+                    ( { model | quote = Just quote, isLoading = False, error = Nothing }
+                    , Cmd.none
+                    )
+
+                Err err ->
+                    ( { model | quote = Nothing, isLoading = False, error = Just err }
+                    , Cmd.none
+                    )
 
 
 quoteDecoder : Decode.Decoder Quote
@@ -75,7 +82,7 @@ init apiUrl =
 view : Model -> Html Msg
 view model =
     div []
-        [ button [ onClick FetchQuote ] [ text "Get Random Quote" ]
+        [ button [ Events.onClick FetchQuote ] [ text "Get Random Quote" ]
         , if model.isLoading then
             div [] [ text "Loading..." ]
 
@@ -90,8 +97,8 @@ view model =
                 Nothing ->
                     div [] [ text "Click the button for some wisdom!" ]
         , case model.error of
-            Just err ->
-                div [] [ text ("error: " ++ err) ]
+            Just _ ->
+                div [] [ text "An error has occured, sorry about that!" ]
 
             Nothing ->
                 div [] [ text "" ]
