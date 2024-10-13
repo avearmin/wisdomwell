@@ -36,6 +36,7 @@ func NewConfig() (Config, error) {
 	sessionStore := session.NewStore(time.Duration(time.Hour * 720))
 
 	c := Config{
+		apiUrl:       apiUrl,
 		db:           db,
 		sessionStore: sessionStore,
 	}

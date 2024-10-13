@@ -124,3 +124,20 @@ func (c Config) HandlerDeleteQuote(w http.ResponseWriter, r *http.Request, userI
 	}
 
 }
+
+func (c Config) HandlerGetRandomQuote(w http.ResponseWriter, r *http.Request) {
+	quote, err := c.db.GetRandomQuote(r.Context())
+	if err != nil {	
+		if errors.Is(err, sql.ErrNoRows) {
+			respondWithError(w, http.StatusNotFound, "not found")		
+		} else {
+			respondWithError(w, http.StatusInternalServerError, "internal server error")
+		}
+		return
+	}
+
+	outgoing := dbQuoteToJSONQuote(quote)
+	if err := respondWithJson(w, http.StatusOK, outgoing); err != nil {
+		respondWithError(w, http.StatusInternalServerError, "internal server error")
+	}
+}

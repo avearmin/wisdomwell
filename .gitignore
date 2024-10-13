@@ -1,2 +1,8 @@
-.env
 .idea
+
+backend/.env
+backend/.idea
+
+frontend/elm-stuff
+frontend/dist
+frontend/src/config.json
