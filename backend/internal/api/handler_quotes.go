@@ -3,14 +3,15 @@ package api
 import (
 	"database/sql"
 	"errors"
-	"github.com/avearmin/wisdomwell/internal/database"
-	"github.com/google/uuid"
 	"net/http"
 	"time"
+
+	"github.com/avearmin/wisdomwell/internal/database"
+	"github.com/google/uuid"
 )
 
 func (c Config) HandlerGetAllQuotes(w http.ResponseWriter, r *http.Request) {
-	quotes, err := c.db.GetAllQuotes(r.Context())
+	quotes, err := c.Db.GetAllQuotes(r.Context())
 	if err != nil {
 		respondWithError(w, http.StatusInternalServerError, "internal server error")
 		return
@@ -35,7 +36,7 @@ func (c Config) HandlerGetQuote(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	quote, err := c.db.GetQuote(r.Context(), id)
+	quote, err := c.Db.GetQuote(r.Context(), id)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			respondWithError(w, http.StatusNotFound, "not found")
@@ -63,7 +64,7 @@ func (c Config) HandlerPostQuote(w http.ResponseWriter, r *http.Request, userID 
 		return
 	}
 
-	quote, err := c.db.PostQuote(r.Context(), database.PostQuoteParams{
+	quote, err := c.Db.PostQuote(r.Context(), database.PostQuoteParams{
 		ID:        uuid.New(),
 		CreatedAt: time.Now(),
 		UpdatedAt: time.Now(),
@@ -91,7 +92,7 @@ func (c Config) HandlerDeleteQuote(w http.ResponseWriter, r *http.Request, userI
 		return
 	}
 
-	quote, err := c.db.GetQuote(r.Context(), incoming.ID)
+	quote, err := c.Db.GetQuote(r.Context(), incoming.ID)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			respondWithError(w, http.StatusNotFound, "not found")
@@ -105,7 +106,7 @@ func (c Config) HandlerDeleteQuote(w http.ResponseWriter, r *http.Request, userI
 		return
 	}
 
-	if err := c.db.DeleteQuote(r.Context(), incoming.ID); err != nil {
+	if err := c.Db.DeleteQuote(r.Context(), incoming.ID); err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			respondWithError(w, http.StatusNotFound, "not found")
 		} else {
@@ -126,10 +127,10 @@ func (c Config) HandlerDeleteQuote(w http.ResponseWriter, r *http.Request, userI
 }
 
 func (c Config) HandlerGetRandomQuote(w http.ResponseWriter, r *http.Request) {
-	quote, err := c.db.GetRandomQuote(r.Context())
-	if err != nil {	
+	quote, err := c.Db.GetRandomQuote(r.Context())
+	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			respondWithError(w, http.StatusNotFound, "not found")		
+			respondWithError(w, http.StatusNotFound, "not found")
 		} else {
 			respondWithError(w, http.StatusInternalServerError, "internal server error")
 		}

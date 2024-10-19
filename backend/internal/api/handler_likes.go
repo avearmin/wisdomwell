@@ -11,7 +11,7 @@ import (
 )
 
 func (c Config) HandlerGetAllLikes(w http.ResponseWriter, r *http.Request) {
-	likes, err := c.db.GetAllLikes(r.Context())
+	likes, err := c.Db.GetAllLikes(r.Context())
 	if err != nil {
 		respondWithError(w, http.StatusInternalServerError, "internal server error")
 		return
@@ -44,7 +44,7 @@ func (c Config) HandlerGetLike(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	like, err := c.db.GetLike(r.Context(), database.GetLikeParams{
+	like, err := c.Db.GetLike(r.Context(), database.GetLikeParams{
 		UserID:  userID,
 		QuoteID: quoteID,
 	})
@@ -73,9 +73,9 @@ func (c Config) HandlerPostLike(w http.ResponseWriter, r *http.Request, userID u
 		return
 	}
 
-	like, err := c.db.PostLike(r.Context(), database.PostLikeParams{
-		UserID:  userID,
-		QuoteID: incoming.QuoteID,
+	like, err := c.Db.PostLike(r.Context(), database.PostLikeParams{
+		UserID:    userID,
+		QuoteID:   incoming.QuoteID,
 		CreatedAt: time.Now(),
 	})
 	if err != nil {
@@ -103,7 +103,7 @@ func (c Config) HandlerDeleteLike(w http.ResponseWriter, r *http.Request, userID
 		return
 	}
 
-	err := c.db.DeleteLike(r.Context(), database.DeleteLikeParams{
+	err := c.Db.DeleteLike(r.Context(), database.DeleteLikeParams{
 		UserID:  userID,
 		QuoteID: incoming.QuoteID,
 	})

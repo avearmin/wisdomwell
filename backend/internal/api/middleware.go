@@ -24,7 +24,7 @@ func (c Config) MiddlewareAuth(next authedHandler) http.HandlerFunc {
 
 		sessionID := fields[1]
 
-		session, ok := c.sessionStore.Get(sessionID)
+		session, ok := c.SessionStore.Get(sessionID)
 		if !ok {
 			respondWithError(w, http.StatusNotFound, "session does not exist")
 		}

@@ -9,16 +9,16 @@ import (
 )
 
 func (c Config) HandlerGetAllTags(w http.ResponseWriter, r *http.Request) {
-	tags, err := c.db.GetAllTags(r.Context())
+	tags, err := c.Db.GetAllTags(r.Context())
 	if err != nil {
 		respondWithError(w, http.StatusInternalServerError, "internal server error")
 		return
 	}
-	
+
 	outgoing := make([]Tag, len(tags))
-	
+
 	for i, tag := range tags {
-		outgoing[i] = dbTagToJSONTag(tag)	
+		outgoing[i] = dbTagToJSONTag(tag)
 	}
 
 	respondWithJson(w, http.StatusOK, outgoing)
@@ -33,7 +33,7 @@ func (c Config) HandlerGetTag(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	tag, err := c.db.GetTag(r.Context(), id)
+	tag, err := c.Db.GetTag(r.Context(), id)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			respondWithError(w, http.StatusNotFound, "not found")

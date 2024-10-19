@@ -20,6 +20,20 @@ func Start() {
 		log.Fatalf("error loading .env: %v", err)
 	}
 
+	port, err := loadPort()
+	if err != nil {
+		log.Fatalf("error loading port: %v", err)
+	}
+
+	srv, err := MakeServer(port, config)
+
+	log.Println("Serving on port " + srv.Addr)
+	if err := srv.ListenAndServe(); err != nil {
+		log.Fatal(err)
+	}
+}
+
+func MakeServer(port string, config api.Config) (http.Server, error) {
 	mux := http.NewServeMux()
 
 	// healthz
@@ -57,22 +71,12 @@ func Start() {
 
 	corsMux := middlewareCors(mux)
 
-	port, err := loadPort()
-	if err != nil {
-		log.Fatalln(err)
-	}
-
-	srv := http.Server{
+	return http.Server{
 		Addr:         ":" + port,
 		Handler:      corsMux,
 		ReadTimeout:  10 * time.Second,
 		WriteTimeout: 10 * time.Second,
-	}
-
-	log.Println("Serving on port: " + port)
-	if err := srv.ListenAndServe(); err != nil {
-		log.Fatal(err)
-	}
+	}, nil
 }
 
 func loadPort() (string, error) {

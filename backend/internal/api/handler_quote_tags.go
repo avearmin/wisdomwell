@@ -10,7 +10,7 @@ import (
 )
 
 func (c Config) HandlerGetAllQuoteTags(w http.ResponseWriter, r *http.Request) {
-	quoteTags, err := c.db.GetAllQuoteTags(r.Context())
+	quoteTags, err := c.Db.GetAllQuoteTags(r.Context())
 	if err != nil {
 		respondWithError(w, http.StatusInternalServerError, "internal server error")
 		return
@@ -43,7 +43,7 @@ func (c Config) HandlerGetQuoteTag(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	quoteTag, err := c.db.GetQuoteTag(r.Context(), database.GetQuoteTagParams{
+	quoteTag, err := c.Db.GetQuoteTag(r.Context(), database.GetQuoteTagParams{
 		QuoteID: quoteID,
 		TagID:   tagID,
 	})

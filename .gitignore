@@ -1,8 +1,10 @@
 .idea
+.DS_Store
 
-backend/.env
-backend/.idea
+/backend/.env
+/backend/.idea/
+/backend/internal/server/.env_test
 
-frontend/elm-stuff
-frontend/dist
-frontend/src/config.json
+/frontend/elm-stuff/
+/frontend/dist/
+/frontend/src/config.json

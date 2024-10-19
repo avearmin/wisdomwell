@@ -11,9 +11,13 @@ import (
 )
 
 func (c Config) HandlerGetAllUsers(w http.ResponseWriter, r *http.Request) {
-	users, err := c.db.GetAllUsers(r.Context())
+	users, err := c.Db.GetAllUsers(r.Context())
 	if err != nil {
-		respondWithError(w, http.StatusInternalServerError, "internal server error")
+		if errors.Is(err, sql.ErrNoRows) {
+			respondWithError(w, http.StatusNotFound, "not found")
+		} else {
+			respondWithError(w, http.StatusInternalServerError, "internal server error")
+		}
 		return
 	}
 
@@ -38,7 +42,7 @@ func (c Config) HandlerCreateUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	user, err := c.db.CreateUser(r.Context(), database.CreateUserParams{
+	user, err := c.Db.CreateUser(r.Context(), database.CreateUserParams{
 		ID:        uuid.New(),
 		CreatedAt: time.Now(),
 		UpdatedAt: time.Now(),
@@ -70,7 +74,7 @@ func (c Config) HandlerGetUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	user, err := c.db.GetUser(r.Context(), id)
+	user, err := c.Db.GetUser(r.Context(), id)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			respondWithError(w, http.StatusNotFound, "not found")
@@ -96,7 +100,7 @@ func (c Config) HandlerGetAllQuotesFromUser(w http.ResponseWriter, r *http.Reque
 		return
 	}
 
-	quotes, err := c.db.GetAllQuotesFromUser(r.Context(), id)
+	quotes, err := c.Db.GetAllQuotesFromUser(r.Context(), id)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			respondWithError(w, http.StatusNotFound, "not found")
@@ -125,7 +129,7 @@ func (c Config) HandlerGetAllLikesFromUser(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
-	likes, err := c.db.GetAllLikesFromUser(r.Context(), id)
+	likes, err := c.Db.GetAllLikesFromUser(r.Context(), id)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			respondWithError(w, http.StatusNotFound, "not found")
@@ -145,9 +149,8 @@ func (c Config) HandlerGetAllLikesFromUser(w http.ResponseWriter, r *http.Reques
 	}
 }
 
-
 func (c Config) HandlerDeleteUser(w http.ResponseWriter, r *http.Request, userID uuid.UUID) {
-	if err := c.db.DeleteUser(r.Context(), userID); err != nil {
+	if err := c.Db.DeleteUser(r.Context(), userID); err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			respondWithError(w, http.StatusNotFound, "not found")
 		} else {

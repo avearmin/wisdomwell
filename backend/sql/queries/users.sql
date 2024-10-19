@@ -14,3 +14,6 @@ SELECT * FROM users WHERE Email = $1;
 
 -- name: DeleteUser :exec
 DELETE FROM users WHERE ID = $1;
+
+-- name: DeleteUserByEmail :exec
+DELETE FROM users WHERE Email = $1;
